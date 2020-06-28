@@ -34,7 +34,7 @@
 	<build>
 
 		<defaultGoal>clean install</defaultGoal>
-		<finalName>${project.name}</finalName>
+		<finalName>JDAExtended</finalName>
 		<sourceDirectory>${basedir}/src/main/java/</sourceDirectory>
 		<plugins>
 			<plugin>
