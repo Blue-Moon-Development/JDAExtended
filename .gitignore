@@ -1,0 +1,9 @@
+/target/
+.settings
+.classpath
+.project
+/logs/
+/data/
+/doc/
+/src/test/resources/settings.cfg
+/feeds/
