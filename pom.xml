@@ -156,7 +156,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.bluemoondev</groupId>
+			<groupId>com.github.TigerCipher</groupId>
 			<artifactId>SimpleSQL</artifactId>
 			<version>v1.0.4b-SNAPSHOT</version>
 		</dependency>
