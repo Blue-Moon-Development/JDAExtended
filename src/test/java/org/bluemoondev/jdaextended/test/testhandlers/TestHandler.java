@@ -17,7 +17,7 @@
 *
 *	Contact: matt@bluemoondev.org
  */
-package com.teivodov.jdaextended.testhandlers;
+package org.bluemoondev.jdaextended.test.testhandlers;
 
 import org.bluemoondev.jdaextended.reflection.EventListener;
 

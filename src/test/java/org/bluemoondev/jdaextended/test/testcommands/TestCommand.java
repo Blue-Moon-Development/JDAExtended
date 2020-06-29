@@ -17,7 +17,7 @@
 *
 *	Contact: matt@bluemoondev.org
  */
-package com.teivodov.jdaextended.testcommands;
+package org.bluemoondev.jdaextended.test.testcommands;
 
 import org.bluemoondev.jdaextended.commands.BaseCommand;
 import org.bluemoondev.jdaextended.reflection.Command;

@@ -1,12 +1,11 @@
-package com.teivodov.jdaextended;
+package org.bluemoondev.jdaextended.test;
 
 import org.bluemoondev.jdaextended.BotApp;
 import org.bluemoondev.jdaextended.JDAExtended;
 import org.bluemoondev.jdaextended.Modules;
 import org.bluemoondev.jdaextended.rss.FeedFactory;
 import org.bluemoondev.jdaextended.rss.FeedParser;
-
-import com.teivodov.jdaextended.testmanagers.TestDataManager;
+import org.bluemoondev.jdaextended.test.testmanagers.TestDataManager;
 
 public class AppTest extends BotApp {
 

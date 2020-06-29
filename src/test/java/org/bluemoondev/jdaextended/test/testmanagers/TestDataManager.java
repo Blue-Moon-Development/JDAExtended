@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  * Contact: matt@bluemoondev.org
  */
-package com.teivodov.jdaextended.testmanagers;
+package org.bluemoondev.jdaextended.test.testmanagers;
 
 import org.bluemoondev.jdaextended.util.Debug;
 import org.bluemoondev.simplesql.SQLTable;
