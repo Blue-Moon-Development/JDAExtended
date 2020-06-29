@@ -5,7 +5,7 @@
 
 	<groupId>org.bluemoondev</groupId>
 	<artifactId>jdaextended</artifactId>
-	<version>v2.0.1-SNAPSHOT</version>
+	<version>v2.0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>jdaextended</name>
@@ -167,9 +167,9 @@
 
 	<repositories>
 		<repository>
-			<id>jcenter</id>
+ 			<id>jcenter</id>
 			<name>jcenter-bintray</name>
-			<url>http://jcenter.bintray.com</url>
+			<url>https://jcenter.bintray.com</url>
 		</repository>
 		<repository>
 			<id>jcenter-snapshot</id>
