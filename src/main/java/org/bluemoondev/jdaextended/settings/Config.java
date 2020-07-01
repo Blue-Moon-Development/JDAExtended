@@ -15,20 +15,15 @@
  */
 package org.bluemoondev.jdaextended.settings;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
-import org.bluemoondev.jdaextended.util.BufferedFile;
 import org.bluemoondev.jdaextended.util.Checks;
 import org.bluemoondev.jdaextended.util.Debug;
-import org.bluemoondev.jdaextended.util.FileUtil;
 import org.bluemoondev.jdaextended.util.exceptions.JDAConfigurationException;
+import org.bluemoondev.jdaextended.util.io.BufferedFile;
+import org.bluemoondev.jdaextended.util.io.FileFactory;
 
 /**
  * <strong>Project:</strong> jdaextended <br>
@@ -41,8 +36,6 @@ import org.bluemoondev.jdaextended.util.exceptions.JDAConfigurationException;
  */
 public class Config {
 
-	// TODO Properties is a lazy day. Should make an actualy mapped system, that way
-	// a default config could be created if needed
 
 	private Map<String, String>	options;
 	private String[]			lines;
@@ -54,7 +47,7 @@ public class Config {
 	 */
 	public Config(String fileName) {
 		options = new HashMap<String, String>();
-		BufferedFile f = new BufferedFile(fileName, 25, () -> {
+		BufferedFile f = FileFactory.createBufferedFile(fileName, () -> {
 			return setupDefaultOptions();
 		});
 
