@@ -36,11 +36,12 @@
             <!-- rollover daily -->
             <fileNamePattern>${DEV_HOME}/archived/debug.%d{yyyy-MM-dd}.%i.log
             </fileNamePattern>
-            <maxHistory>10</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy
                 class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>10MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>10</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
 
     </appender>
@@ -60,11 +61,12 @@
             <!-- rollover daily -->
             <fileNamePattern>${DEV_HOME}/archived/error.%d{yyyy-MM-dd}.%i.log
             </fileNamePattern>
-            <maxHistory>10</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy
                 class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>10MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>10</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
 
     </appender>
