@@ -23,7 +23,8 @@ import org.bluemoondev.jdaextended.Modules;
 import org.bluemoondev.jdaextended.util.ActionUtil;
 import org.bluemoondev.jdaextended.util.Emojis;
 
-import com.github.twitch4j.common.events.channel.ChannelGoLiveEvent;
+import com.github.philippheuer.events4j.reactor.ReactorEventHandler;
+import com.github.twitch4j.events.ChannelGoLiveEvent;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -43,17 +44,18 @@ public class TwitchTicker {
 
 	public TwitchTicker() {
 		if (Modules.isEnabled(Modules.TWITCH) && JDAExtended.getTwitchRequester() != null) {
+
 			List<Guild> guilds = JDAExtended.getBot().getJda().getGuilds();
 			if (null == guilds || guilds.isEmpty()) return;
 
 			for (long l : JDAExtended.TWITCH_TABLE.getTwitchIds())
 				JDAExtended.getTwitchRequester().getClient().getClientHelper()
 						.enableStreamEventListener(JDAExtended.getTwitchRequester().getNameFromId(l));
-
-			JDAExtended.getTwitchRequester().getClient().getEventManager().onEvent(ChannelGoLiveEvent.class)
-					.subscribe(event -> {
-						run(event);
-					});
+			ReactorEventHandler eventHandler = new ReactorEventHandler();
+			JDAExtended.getTwitchRequester().getClient().getEventManager().registerEventHandler(eventHandler);
+			eventHandler.onEvent(ChannelGoLiveEvent.class, subscriber -> {
+				run(subscriber);
+			});
 		}
 	}
 
@@ -68,22 +70,25 @@ public class TwitchTicker {
 			for (Guild g : guilds) {
 				long gid = g.getIdLong();
 				if (guildId == gid) {
-					if (JDAExtended.TWITCH_TABLE.getTwitchIds(guildId).contains(event.getChannel().getId())) {
+					if (JDAExtended.TWITCH_TABLE.getTwitchIds(guildId)
+							.contains(Long.parseLong(event.getChannel().getId()))) {
 						String name = event.getChannel().getName();
 						EmbedBuilder eb = new EmbedBuilder().setTitle(name + " is live!").setColor(Color.MAGENTA)
-								.addField("Title", event.getTitle(), false)
-								.addField(name + " is playing", twitch.getGame(Long.toString(event.getGameId())), false)
-								.addField("", twitch.getURL(event.getChannel().getId()), false)
+								.addField("Title", event.getStream().getTitle(), false)
+								.addField(name + " is playing", twitch.getGame(event.getStream().getGameId()), false)
+								.addField("", twitch.getURL(event.getChannel().getName()), false)
 								.setImage(twitch.getImage(event.getChannel().getId()));
 
 						long channelId = JDAExtended.CORE_TABLE.getAlertsChannel(guildId);
 						MessageChannel channel = g.getTextChannelById(channelId);
 						if (channel == null) return;
-						if (JDAExtended.TWITCH_TABLE.doesUserGetMentions(guildId, event.getChannel().getId())) {
+						if (JDAExtended.TWITCH_TABLE
+								.doesUserGetMentions(guildId, Long.parseLong(event.getChannel().getId()))) {
 							Member m = g.getMemberById(JDAExtended.TWITCH_TABLE
-									.getUser(guildId, event.getChannel().getId()));
-							ActionUtil.sendMessageAndComplete(channel, "%s %s is %s %s", Emojis.RED_DOT, m
-									.getAsMention(), Emojis.stringToEmojiRef("live!"), Emojis.RED_DOT);
+									.getUser(guildId, Long.parseLong(event.getChannel().getId())));
+							ActionUtil.sendMessageAndComplete(	channel, "%s %s is %s %s", Emojis.RED_DOT,
+																m.getAsMention(), Emojis.stringToEmojiRef("live!"),
+																Emojis.RED_DOT);
 						}
 
 						ActionUtil.sendEmbedAndComplete(channel, eb.build());

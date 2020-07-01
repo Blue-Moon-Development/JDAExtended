@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
 /**
@@ -108,17 +109,16 @@ public class ActionUtil {
 	}
 
 
-	public static boolean sendDMAndQueue(User user, String msg) {
-		boolean[] success = new boolean[1];
-		user.openPrivateChannel().queue(channel -> {
-			channel.sendMessage(msg).queue();
-			success[0] = true;
-		}, error -> {
-			Debug.warn("Failed to send DM to user " + user.getName(), error);
-			success[0] = false;
-		});
+	public static boolean sendDMAndComplete(User user, String msg) {
+		boolean success = true;
+		try {
+		user.openPrivateChannel().complete().sendMessage(msg).complete();
+		}catch(ErrorResponseException ex) {
+			Debug.warn("Failed to send DM to user " + user.getName(), ex);
+			success = false;
+		}
 
-		return success[0];
+		return success;
 	}
 
 	public static void addReactionToLastAndQueue(MessageChannel channel, String emoji) {

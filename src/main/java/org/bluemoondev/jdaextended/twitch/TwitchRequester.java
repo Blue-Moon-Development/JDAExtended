@@ -16,14 +16,23 @@
 package org.bluemoondev.jdaextended.twitch;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bluemoondev.jdaextended.util.Debug;
 
+import com.github.philippheuer.credentialmanager.CredentialManager;
+import com.github.philippheuer.credentialmanager.CredentialManagerBuilder;
+import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
+import com.github.twitch4j.auth.providers.TwitchIdentityProvider;
+import com.github.twitch4j.helix.TwitchHelix;
+import com.github.twitch4j.helix.TwitchHelixBuilder;
 import com.github.twitch4j.helix.domain.Game;
 import com.github.twitch4j.helix.domain.User;
+import com.github.twitch4j.helix.domain.UserList;
+import com.github.twitch4j.kraken.domain.KrakenUserList;
 
 /**
  * <strong>Project:</strong> jdaextended <br>
@@ -36,11 +45,16 @@ import com.github.twitch4j.helix.domain.User;
  */
 public class TwitchRequester {
 
-	private TwitchClient client;
+	private TwitchClient	client;
+	private String			clientId;
+	private String			credential;
 
 	public TwitchRequester(String clientId, String credential) {
+		this.clientId = clientId;
+		this.credential = credential;
 		Debug.info("Initializing twitch client");
-		client = TwitchClientBuilder.builder().withEnableHelix(true).withClientId(clientId).withClientSecret(credential)
+		client = TwitchClientBuilder.builder().withEnableHelix(true)
+				.withClientId(clientId).withClientSecret(credential)
 				.build();
 		Debug.info("Twitch client connected");
 	}
@@ -48,7 +62,8 @@ public class TwitchRequester {
 	public TwitchClient getClient() { return client; }
 
 	public long getFollowers(long channelId) {
-		return client.getHelix().getFollowers(null, null, channelId, null, 100).execute().getTotal();
+		return client.getHelix().getFollowers(null, null, String.valueOf(channelId), null, 100).execute()
+				.getTotal();
 	}
 
 	public String getGame(String gameId) {
@@ -68,11 +83,11 @@ public class TwitchRequester {
 	}
 
 	public long getIdFromName(String channelName) {
-		List<String> channelNames = new ArrayList<String>();
-		channelNames.add(channelName);
-		List<User> users = client.getHelix().getUsers(null, null, channelNames).execute().getUsers();
+		System.err.println("Trying to get ID for " + channelName);
+		UserList userList = client.getHelix().getUsers(null, null, Arrays.asList(channelName)).execute();
+		List<User> users = userList.getUsers();
 		if (users.isEmpty()) return -1L;
-		return users.get(0).getId();
+		return Long.parseLong(users.get(0).getId());
 	}
 
 	public long getFollowers(String channelName) {
@@ -84,9 +99,8 @@ public class TwitchRequester {
 	}
 
 	public String getImage(String channelName) {
-		List<String> channelNames = new ArrayList<String>();
-		channelNames.add(channelName);
-		List<User> users = client.getHelix().getUsers(null, null, channelNames).execute().getUsers();
+		List<User> users = client.getHelix().getUsers(null, null, Arrays.asList(channelName)).execute()
+				.getUsers();
 		if (users.isEmpty()) return null;
 		return users.get(0).getProfileImageUrl();
 	}
@@ -99,9 +113,9 @@ public class TwitchRequester {
 	}
 
 	public String getNameFromId(long streamer) {
-		List<Long> channelIds = new ArrayList<Long>();
-		channelIds.add(streamer);
-		List<User> users = client.getHelix().getUsers(null, channelIds, null).execute().getUsers();
+		UserList userList = client.getHelix().getUsers(null, Arrays.asList(String.valueOf(streamer)), null)
+				.execute();
+		List<User> users = userList.getUsers();
 		if (users.isEmpty()) return null;
 		return users.get(0).getDisplayName();
 	}

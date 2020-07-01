@@ -5,7 +5,7 @@
 
 	<groupId>org.bluemoondev</groupId>
 	<artifactId>jdaextended</artifactId>
-	<version>v2.0.2-SNAPSHOT</version>
+	<version>v2.0.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>jdaextended</name>
@@ -89,9 +89,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.github.twitch4j</groupId>
+			<groupId>com.github.Twitch4j</groupId>
 			<artifactId>twitch4j</artifactId>
-			<version>1.0.0-alpha.11</version>
+			<version>1.0.0</version>
 		</dependency>
 
 		<dependency>
@@ -161,13 +161,18 @@
 			<version>v1.0.6b-SNAPSHOT</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.github.philippheuer.events4j</groupId>
+			<artifactId>events4j-handler-reactor</artifactId>
+			<version>0.8.0</version>
+		</dependency>
 
 
 	</dependencies>
 
 	<repositories>
 		<repository>
- 			<id>jcenter</id>
+			<id>jcenter</id>
 			<name>jcenter-bintray</name>
 			<url>https://jcenter.bintray.com</url>
 		</repository>
