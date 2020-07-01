@@ -40,6 +40,9 @@ import java.util.logging.Logger;
  * @author <a href = "https://bluemoondev.org"> Matt</a>
  */
 public class FileUtil {
+	
+	//TODO: Should really not be a static class
+	//TODO: Add remote file capability
 
 	/**
 	 * Writes a file

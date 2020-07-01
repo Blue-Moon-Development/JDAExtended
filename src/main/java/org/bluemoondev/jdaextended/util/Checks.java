@@ -33,6 +33,15 @@ public class Checks {
 		return true;
 	}
 	
+	public static boolean isLongNumber(String input) {
+		try {
+			long a = Long.parseLong(input);
+		} catch (NumberFormatException e) {
+			return false;
+		}
+		return true;
+	}
+	
 	public static boolean isHexNumber(String input) {
 		try {
 			int a = Util.getFromHex(input);

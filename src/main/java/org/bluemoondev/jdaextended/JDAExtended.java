@@ -75,18 +75,18 @@ public class JDAExtended {
 			Debug.warn("Uncaught exception in thread " + t.getName(), e);
 		});
 
-		cfg = new Config("settings.cfg");
-		if (cfg.getOption("database").equalsIgnoreCase("sqlite"))
+		cfg = new Config("./settings.cfg");
+		if (cfg.getString("database").equalsIgnoreCase("sqlite"))
 			SimpleSQL.init(new SQLite(new File("./database.db")));
-		else SimpleSQL.init(new MySql(	cfg.getOption("database.host"), cfg.getOption("database.user"),
-										cfg.getOption("database.password"), cfg.getOption("database.name"),
-										Integer.parseInt(cfg.getOption("database.port")),
-										cfg.getOption("database.timezone")));
-		devId = Long.parseLong(cfg.getOption("dev.id"));
+		else SimpleSQL.init(new MySql(	cfg.getString("database.host"), cfg.getString("database.user"),
+										cfg.getString("database.password"), cfg.getString("database.name"),
+										cfg.getInt("database.port"),
+										cfg.getString("database.timezone")));
+		devId = cfg.getLong("dev.id");
 
 		botApp.preinit();
 
-		bot = new Bot(cfg.getOption("bot.token"), botApp.getActivity());
+		bot = new Bot(cfg.getString("bot.token"), botApp.getActivity());
 		EventHandler.init(bot, botApp.getHandlersPackageName());
 		CommandHandler.init(botApp.getCommandsPackageName());
 		bot.addEventListener(new CommandHandler());
@@ -96,7 +96,7 @@ public class JDAExtended {
 		bot.build();
 
 		if (Modules.isEnabled(Modules.TWITCH)) {
-			twitchRequester = new TwitchRequester(cfg.getOption("twitch.id"), cfg.getOption("twitch.token"));
+			twitchRequester = new TwitchRequester(cfg.getString("twitch.client_id"), cfg.getString("twitch.secret"));
 			new TwitchTicker();
 		}
 

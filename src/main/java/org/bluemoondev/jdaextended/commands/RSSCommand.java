@@ -45,7 +45,7 @@ public class RSSCommand extends SubCommand {
             case "link":
                 JDAExtended.RSS_TABLE.setLink(args[0], guildId, channelId);
                 FeedParser parser = FeedFactory.createParser(guildId, channelId, args[0]);
-                parser.start(Integer.parseInt(JDAExtended.getConfig().getOption("rss.delay")), e -> {
+                parser.start(JDAExtended.getConfig().getInt("rss.delay"), e -> {
                     if(JDAExtended.RSS_TABLE.getLink(guildId, channelId) == null) return;
                     if(parser.newEntry(e)){
                         ActionUtil.sendMessageAndComplete(message.getChannel(), e.getLink());

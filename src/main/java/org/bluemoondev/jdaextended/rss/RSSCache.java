@@ -50,7 +50,7 @@ public class RSSCache {
                         String link = JDAExtended.RSS_TABLE.getLink(guildId, channelId);
 
                         FeedParser parser = new FeedParser(guildId, channelId, link);
-                        parser.start(Integer.parseInt(cfg.getOption("rss.delay")), e -> {
+                        parser.start(cfg.getInt("rss.delay"), e -> {
                                  if (parser.newEntry(e))
                                      ActionUtil.sendMessageAndComplete(JDAExtended.getBot().getJda().getGuildById(guildId)
                                              .getTextChannelById(channelId), e.getLink());
