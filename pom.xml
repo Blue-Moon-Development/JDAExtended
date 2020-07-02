@@ -158,7 +158,7 @@
 		<dependency>
 			<groupId>org.bluemoondev</groupId>
 			<artifactId>SimpleSQL</artifactId>
-			<version>v1.0.6b-SNAPSHOT</version>
+			<version>dev</version>
 		</dependency>
 
 		<dependency>

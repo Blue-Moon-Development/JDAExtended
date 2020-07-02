@@ -16,11 +16,13 @@
 package org.bluemoondev.jdaextended.listeners;
 
 import org.bluemoondev.jdaextended.JDAExtended;
+import org.bluemoondev.jdaextended.Modules;
 import org.bluemoondev.jdaextended.reflection.EventListener;
 import org.bluemoondev.jdaextended.util.ActionUtil;
 import org.bluemoondev.jdaextended.util.Debug;
 import org.bluemoondev.jdaextended.util.Emojis;
 
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -40,10 +42,25 @@ public class NewServerListener extends ListenerAdapter {
 	@Override
 	public void onGuildJoin(GuildJoinEvent event) {
 		long guildId = event.getGuild().getIdLong();
-		ActionUtil.sendMessageAndComplete(event.getGuild()
-				.getSystemChannel(), "*This bot is powered by JDA-Extended %s, "
-										+ "an API in alpha stages by Teivodov. "
-										+ "Type `>help` to get started*", Emojis.MARK_DOUBLE_EXCLAMATION);
+
+		EmbedBuilder eb = new EmbedBuilder().setAuthor("Blue Moon Development", "https://bluemoondev.org")
+				.setTitle(JDAExtended.getBot().getJda().getSelfUser().getName() + " Powered by JDA-Extended")
+				.setDescription("Type `>help` for commands")
+				.setColor(0xff0000);
+		StringBuilder sb = new StringBuilder();
+		if (Modules.isEnabled(Modules.TWITCH)) {
+			sb.append("Set up the Twitch alerts channel with `>twitch alerts (name of channel)`\n");
+			sb.append("Set up the Role to be mentioned for allowed alerts with `>twitch mention (role name)`\n");
+			sb.append("For information on adding and removing Twitch alerts, see `>help twitch`\n");
+		}
+		
+		if(Modules.isEnabled(Modules.AUDIT_LOGS))
+			sb.append("Set up the audit logs channel with `>logs (channel name)`\n");
+
+		eb.addField("Getting Started", sb.toString(), false);
+		
+		ActionUtil.sendEmbedAndComplete(event.getGuild().getSystemChannel(), eb.build());
+		
 		Debug.info("Joining new server with ID: " + guildId);
 		String s = JDAExtended.CORE_TABLE.getPrefix(guildId);
 		if (s == null || s == "null" || s.isEmpty())
