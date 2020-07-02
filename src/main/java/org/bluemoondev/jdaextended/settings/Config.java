@@ -19,11 +19,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+
 import org.bluemoondev.jdaextended.util.Checks;
 import org.bluemoondev.jdaextended.util.Debug;
 import org.bluemoondev.jdaextended.util.exceptions.JDAConfigurationException;
 import org.bluemoondev.jdaextended.util.io.BufferedFile;
-import org.bluemoondev.jdaextended.util.io.FileFactory;
+import org.bluemoondev.jdaextended.util.io.FileBuilder;
 
 /**
  * <strong>Project:</strong> jdaextended <br>
@@ -47,9 +48,13 @@ public class Config {
 	 */
 	public Config(String fileName) {
 		options = new HashMap<String, String>();
-		BufferedFile f = FileFactory.createBufferedFile(fileName, () -> {
-			return setupDefaultOptions();
-		});
+		BufferedFile f = new FileBuilder(fileName).setAppendable(true).setHasDefaultContents(buf -> {
+			String[] lines = setupDefaultOptions();
+			for (int i = 0; i < lines.length; i++) {
+				if (lines[i] == null) break;
+				buf.write(lines[i], true);
+			}
+		}).buildLocal();
 
 		if (f.isNewlyCreated()) {
 			f.close();
