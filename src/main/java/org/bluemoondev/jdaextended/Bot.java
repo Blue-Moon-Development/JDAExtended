@@ -27,7 +27,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 /**
  * <strong>Project:</strong> jdaextended <br>
  * <strong>File:</strong> Bot.java
- * <p>
+ * 
  * Essentially a wrapper for {@link net.dv8tion.jda.api.JDA JDA} and
  * {@link net.dv8tion.jda.api.JDABuilder}, basically a
  * simplified version. Example as follows:<br>
@@ -40,7 +40,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
  * 	bot.build();
  * }
  * </pre>
- * </p>
+ * 
  *
  * @author <a href = "https://bluemoondev.org"> Matt</a>
  */
@@ -55,8 +55,7 @@ public final class Bot {
 	/**
 	 * Constructs the Bot object. Should only be needed by JDA-Extended itself
 	 *
-	 * @param token    The authentication for the bot. See
-	 *                 {@link org.bluemoondev.jdaextended.reflection.BotInfo BotApp}
+	 * @param token    The authentication for the bot. Defined in settings.cfg
 	 * @param activity The status displayed by the bot. Can be
 	 *                 <code>Acitivty.playing("msg")</code> or
 	 *                 <code>watching, streaming, listening</code>

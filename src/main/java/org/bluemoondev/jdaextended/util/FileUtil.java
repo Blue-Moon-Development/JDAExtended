@@ -33,7 +33,6 @@ import java.util.logging.Logger;
  * <strong>Project:</strong> jdaextended <br>
  * <strong>File:</strong> FileUtil.java
  * <p>
- * <p>
  * A utility class which provides methods for working with files
  * </p>
  *

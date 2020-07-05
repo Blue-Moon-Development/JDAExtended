@@ -38,6 +38,8 @@ public class FileBuilder {
 	 * It will attempt to validate whether or not the supplied path is a url and
 	 * automatically set the FileType to REMOTE.
 	 * If this fails, set the type manually {@link #setType(FileType)}
+	 * 
+	 * @param path The path or url to the file
 	 */
 	public FileBuilder(String path) {
 		this.path = path;

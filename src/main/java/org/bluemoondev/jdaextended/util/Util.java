@@ -40,8 +40,8 @@ public class Util {
     /**
      * Joins two arrays
      *
-     * @param The array to place at the beginning of the new array
-     * @param The array to place at the end of the new array
+     * @param first The array to place at the beginning of the new array
+     * @param second The array to place at the end of the new array
      * @return The joined array <code>{ first, second }</code>
      */
     public static String[] joinArray(String[] first, String[] second) {
@@ -101,7 +101,7 @@ public class Util {
     /**
      * Converts an array to a bracketed, comma separated string
      *
-     * @param The array to convert
+     * @param arr The array to convert
      * @return An array styled string representation of the array
      */
     public static String formatArray(Object[] arr) {

@@ -69,6 +69,7 @@ public class Debug {
 		error(t.getMessage(), t);
 	}
 
+	public static Logger getLogger() { return LOG; }
 	public static Logger getErrorLogger() { return ERROR_LOG; }
 
 }

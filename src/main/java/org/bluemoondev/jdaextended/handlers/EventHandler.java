@@ -37,7 +37,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
  * Registers all event listeners that are marked by the
  * {@link org.bluemoondev.jdaextended.reflection.EventListener @EventListener}
  * annotation in the JDA api and in the package specifed by
- * {@link com.teivodov.BotInfo.BotApp#handlersPackageName handlersPackageName}
+ * {@link org.bluemoondev.jdaextended.BotApp#getHandlersPackageName getHandlersPackageName}
  * of the bot's main class
  * </p>
  *

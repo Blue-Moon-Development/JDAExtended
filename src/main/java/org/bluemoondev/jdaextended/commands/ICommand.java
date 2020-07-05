@@ -83,18 +83,18 @@ public interface ICommand extends Comparable<ICommand>{
     /**
      * @return An array of usages for the command and sub commands. The first
      * usage should be the base command usage. The following usages correspond
-     * to the sub commands array. usages[1] -> sub_commands[0] and onwards.
+     * to the sub commands array. usages[1] =&rsaquo; sub_commands[0] and onwards.
      * <p>
-     * <code>[sub command] = required sub command<br> {@code <arg name>} =
+     * <code>[sub command] = required sub command<br>&lsaquo;arg name&rsaquo; =
      * required argument<br>
-     * <@user> = required argument as a user mention<br>
+     * &lsaquo;@user&rsaquo; = required argument as a user mention<br>
      * |arg name| = optional argument</code>
      * </p>
      * <strong>Example, for a command 'rank' which takes 2 sub commands,
      * 'create' and 'delete'</strong>
      * <p>
      * <code>return new String[] { "[sub command]", "{@code <rank name>} |rank
-     * color|", "{@code <rank name>}" };</code><br>
+     * color|", "&lsaquo;rank name&rsaquo;" };</code><br>
      * <i>This would correspond to the array given by
      * {@link org.bluemoondev.jdaextended.commands.ICommand#getSubCommands() getSubCommands()}
      * <code>{ "create", "delete" }</code></i>
@@ -102,7 +102,7 @@ public interface ICommand extends Comparable<ICommand>{
      * <strong>Example, for a command 'kick' which takes 2 arguments and no sub
      * commands</strong>
      * <p>
-     * <code>return new String[] { "{@code <@user> <reason>" };</code><br>
+     * <code>return new String[] { "&lsaquo;@user&rsaquo; &lsaquo;reason&rsaquo;" };</code><br>
      * <i>This would correspond to a null array returned by
      * {@link org.bluemoondev.jdaextended.commands.ICommand#getSubCommands() getSubCommands()}</i>
      * </p>
@@ -110,7 +110,7 @@ public interface ICommand extends Comparable<ICommand>{
     public String[] getUsages();
 
     /**
-     * @param guildId
+     * @param guildId The ID of the guild
      * @return The required permission, role, or both for this command to
      * operate
      */

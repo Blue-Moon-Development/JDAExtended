@@ -30,7 +30,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
  * <strong>Project:</strong> jdaextended <br>
  * <strong>File:</strong> NewServerListener.java
  * <p>
- * <p>
  * TODO: Describe class here
  * </p>
  *

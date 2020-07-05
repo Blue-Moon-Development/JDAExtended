@@ -76,6 +76,7 @@ public class JDAExtended {
 		});
 
 		cfg = new Config("./settings.cfg");
+		SimpleSQL.setLogger(Debug.getLogger());
 		if (cfg.getString("database").equalsIgnoreCase("sqlite"))
 			SimpleSQL.init(new SQLite(new File("./database.db")));
 		else SimpleSQL.init(new MySql(	cfg.getString("database.host"), cfg.getString("database.user"),

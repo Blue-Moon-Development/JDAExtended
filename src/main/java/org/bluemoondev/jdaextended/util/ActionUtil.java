@@ -80,7 +80,7 @@ public class ActionUtil {
 	 * message
 	 * 
 	 * @param received The message received and will be responded to
-	 * @param message  The message to be sent
+	 * @param embed  The message to be sent
 	 */
 	public static void sendEmbedAndComplete(Message received, MessageEmbed embed) {
 		sendEmbedAndComplete(received.getChannel(), embed);
@@ -90,7 +90,7 @@ public class ActionUtil {
 	 * Completes an embedded message to be sent in the given channel
 	 * 
 	 * @param channel The channel to send the message in
-	 * @param message The message embed to send
+	 * @param embed The message embed to send
 	 */
 	public static void sendEmbedAndComplete(MessageChannel channel, MessageEmbed embed) {
 		sendMessage(channel, embed).complete();

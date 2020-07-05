@@ -54,7 +54,7 @@ public abstract class BotApp {
 	/**
 	 * Command run when the bot restarts. A script, such as a shell script, is
 	 * required to start the bot's jar. Example:
-	 * <code>./start.sh & disown</code>
+	 * <code>./start.sh &amp; disown</code>
 	 *
 	 * @return The command to run
 	 */
