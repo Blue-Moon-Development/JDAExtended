@@ -8,3 +8,4 @@
 /src/test/resources/settings.cfg
 /feeds/
 /.idea/
+*.iml
