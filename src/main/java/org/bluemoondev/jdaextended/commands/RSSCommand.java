@@ -16,6 +16,9 @@
  */
 package org.bluemoondev.jdaextended.commands;
 
+import org.bluemoondev.blutilities.annotations.Argument;
+import org.bluemoondev.blutilities.annotations.Command;
+import org.bluemoondev.blutilities.commands.CommandParser;
 import org.bluemoondev.jdaextended.JDAExtended;
 import org.bluemoondev.jdaextended.rss.FeedFactory;
 import org.bluemoondev.jdaextended.rss.FeedParser;
@@ -35,16 +38,20 @@ import net.dv8tion.jda.api.entities.Message;
  *
  * @author <a href = "https://bluemoondev.org"> Matt</a>
  */
-public class RSSCommand extends SubCommand {
+@Command(name = "rss", subCmds = true)
+public class RSSCommand extends ModuleCommand {
+    
+    @Argument(name = "rsslink", shortcut = "l", desc = "The RSS Feed link", cmd = "link")
+    private String link;
 
     @Override
-    public void run(Message message, String subCmd, String[] args) {
+    public void run(Message message, String subCmd) {
         long guildId = message.getGuild().getIdLong();
         long channelId = message.getChannel().getIdLong();
         switch(subCmd){
             case "link":
-                JDAExtended.RSS_TABLE.setLink(args[0], guildId, channelId);
-                FeedParser parser = FeedFactory.createParser(guildId, channelId, args[0]);
+                JDAExtended.RSS_TABLE.setLink(link, guildId, channelId);
+                FeedParser parser = FeedFactory.createParser(guildId, channelId, link);
                 parser.start(JDAExtended.getConfig().getInt("rss.delay"), e -> {
                     if(JDAExtended.RSS_TABLE.getLink(guildId, channelId) == null) return;
                     if(parser.newEntry(e)){
@@ -60,30 +67,7 @@ public class RSSCommand extends SubCommand {
         }
     }
 
-    @Override
-    public String getName() {
-        return "rss";
-    }
 
-    @Override
-    public String getDescription() {
-        return "Sets up an RSS feed for the channel this command is used in";
-    }
-
-    @Override
-    public String getDetailedDescription() {
-        return "Sets up or unpairs an RSS feed for the channel this command is used in. Only one RSS feed per channel.";
-    }
-
-    @Override
-    public String[] getSubCommands() {
-        return new String[] {"link", "unlink"};
-    }
-
-    @Override
-    public String[] getUsages() {
-        return new String[] {"[sub command]", "<link>", ""};
-    }
 
     @Override
     public PairedValues<Permission, String> getPermissions(String guildId) {
@@ -91,8 +75,9 @@ public class RSSCommand extends SubCommand {
     }
 
     @Override
-    public int getPriority() {
-        return 0;
+    public void preRun(String sub, CommandParser parser) {
+        if(sub == "link")
+            link = parser.get("rsslink");
     }
 
 }

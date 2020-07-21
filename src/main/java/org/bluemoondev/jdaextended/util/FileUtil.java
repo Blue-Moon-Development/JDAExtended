@@ -18,7 +18,6 @@ package org.bluemoondev.jdaextended.util;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -26,8 +25,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.bluemoondev.blutilities.debug.Log;
 
 /**
  * <strong>Project:</strong> jdaextended <br>
@@ -39,6 +38,8 @@ import java.util.logging.Logger;
  * @author <a href = "https://bluemoondev.org"> Matt</a>
  */
 public class FileUtil {
+    
+    private static final Log LOG = Log.get("JDAExtended", FileUtil.class);
 	
 	//TODO: Should really not be a static class
 	//TODO: Add remote file capability
@@ -226,7 +227,7 @@ public class FileUtil {
 				lineAdded = true;
 			}
 		} catch (IOException ex) {
-			Debug.error("Error while attemping to add line to file: " + file, ex);
+			LOG.error(ex, "Error while attemping to add line to file: " + file);
 		} finally {
 			if (writer != null)
 				writer.close();

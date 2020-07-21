@@ -13,7 +13,7 @@
  */
 package org.bluemoondev.jdaextended.tables;
 
-import org.bluemoondev.jdaextended.util.Debug;
+import org.bluemoondev.blutilities.debug.Log;
 import org.bluemoondev.simplesql.SQLTable;
 import org.bluemoondev.simplesql.columns.LongColumn;
 import org.bluemoondev.simplesql.columns.SQLColumn;
@@ -31,6 +31,8 @@ import org.bluemoondev.simplesql.utils.DataSet;
  * @author <a href = "https://bluemoondev.org"> Matt</a>
  */
 public class RSSTable extends SQLTable {
+    
+    private static final Log LOG = Log.get("JDAExtended", RSSTable.class);
 
 	public static final SQLColumn<Long>		GUILD_ID	= new LongColumn("guild_id", 0L);
 	public static final SQLColumn<Long>		CHANNEL_ID	= new LongColumn("channel_id", 0L);
@@ -44,7 +46,6 @@ public class RSSTable extends SQLTable {
 		try {
 			return getString(LINK.name, new DataSet(GUILD_ID.name, guildId), new DataSet(CHANNEL_ID.name, channelId));
 		} catch (SSQLException ex) {
-			Debug.error(ex);
 			return null;
 		}
 	}
@@ -53,7 +54,6 @@ public class RSSTable extends SQLTable {
 		try {
 			update(LINK.name, link, new DataSet(GUILD_ID.name, guildId), new DataSet(CHANNEL_ID.name, channelId));
 		} catch (SSQLException ex) {
-			Debug.error(ex);
 		}
 	}
 

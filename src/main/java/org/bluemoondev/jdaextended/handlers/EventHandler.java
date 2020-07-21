@@ -22,9 +22,9 @@ package org.bluemoondev.jdaextended.handlers;
 import java.util.ArrayList;
 import java.util.Set;
 
+import org.bluemoondev.blutilities.debug.Log;
 import org.bluemoondev.jdaextended.Bot;
 import org.bluemoondev.jdaextended.reflection.EventListener;
-import org.bluemoondev.jdaextended.util.Debug;
 import org.bluemoondev.jdaextended.util.ReflectionUtil;
 
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -44,9 +44,11 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
  * @author <a href = "https://bluemoondev.org"> Matt</a>
  */
 public class EventHandler {
+    
+    private static final Log LOG = Log.get("JDAExtended", EventHandler.class);
 
     public static void init(Bot bot, String packageName) {
-        Debug.info("Registering all marked event listeners");
+        LOG.info("Registering all marked event listeners");
 
         // Register all JDA-Extended event handlers
         Set<Class<?>> classes = ReflectionUtil.getClassesAnnotatedBy("org.bluemoondev.jdaextended.listeners",
@@ -68,17 +70,17 @@ public class EventHandler {
     private static ArrayList<ListenerAdapter> parseClasses(Set<Class<?>> classes) {
         ArrayList<ListenerAdapter> list = new ArrayList<ListenerAdapter>();
         for (Class<?> c : classes) {
-            Debug.trace("Attempting to load event listener class [" + c.getName() + "]");
+            LOG.trace("Attempting to load event listener class [" + c.getName() + "]");
             if (c.getSuperclass() == ListenerAdapter.class) {
                 try {
                     ListenerAdapter la = (ListenerAdapter) c.newInstance();
                     list.add(la);
                 } catch (InstantiationException | IllegalAccessException e) {
-                    Debug.error("Reflection error", e);
+                    LOG.error("Reflection error", e);
                 }
-                Debug.trace("Event handler class [" + c.getName() + "] successfully loaded");
+                LOG.trace("Event handler class [" + c.getName() + "] successfully loaded");
             } else {
-                Debug.error("[" + c.getName() + "] must be a sub type of [net.dv8tion.jda.api.hooks.ListenerAdapter]");
+                LOG.error("[" + c.getName() + "] must be a sub type of [net.dv8tion.jda.api.hooks.ListenerAdapter]");
             }
         }
 

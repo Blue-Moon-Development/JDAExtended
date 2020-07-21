@@ -20,7 +20,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.bluemoondev.jdaextended.util.Debug;
+import org.bluemoondev.blutilities.debug.Log;
 
 /**
  * <strong>Project:</strong> JDAExtended<br>
@@ -32,6 +32,8 @@ import org.bluemoondev.jdaextended.util.Debug;
  * @author <a href = "https://bluemoondev.org"> Matt</a>
  */
 public class BufferedFile extends IOFile {
+    
+    private static final Log LOG = Log.get("JDAExtended", BufferedFile.class);
 
 	private BufferedWriter	writer;
 	private File			file;
@@ -53,7 +55,7 @@ public class BufferedFile extends IOFile {
 			reader.mark(MAX_STREAM_SIZE);
 			writer = new BufferedWriter(new FileWriter(file, append));
 		} catch (IOException ex) {
-			Debug.error(ex);
+			LOG.error(ex);
 		}
 	}
 
@@ -68,7 +70,7 @@ public class BufferedFile extends IOFile {
 			writer.write(contents);
 			if (newLine) writer.write("\n");
 		} catch (IOException ex) {
-			Debug.error("Failed to write to file", ex);
+			LOG.error(ex, "Failed to write to file");
 		}
 	}
 	

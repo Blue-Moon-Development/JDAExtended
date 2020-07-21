@@ -15,16 +15,15 @@ package org.bluemoondev.jdaextended.commands;
 
 import java.util.List;
 
+import org.bluemoondev.blutilities.annotations.Argument;
+import org.bluemoondev.blutilities.annotations.Command;
+import org.bluemoondev.blutilities.commands.CommandParser;
+import org.bluemoondev.blutilities.debug.Log;
 import org.bluemoondev.jdaextended.JDAExtended;
-import org.bluemoondev.jdaextended.reflection.Command;
 import org.bluemoondev.jdaextended.util.ActionUtil;
-import org.bluemoondev.jdaextended.util.Debug;
 import org.bluemoondev.jdaextended.util.Emojis;
 import org.bluemoondev.jdaextended.util.PermissionUtil;
-import org.bluemoondev.jdaextended.util.Util;
 import org.bluemoondev.jdaextended.util.collections.PairedValues;
-import org.bluemoondev.simplesql.exceptions.SSQLException;
-import org.bluemoondev.simplesql.utils.DataSet;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -40,111 +39,126 @@ import net.dv8tion.jda.api.entities.TextChannel;
  *
  * @author <a href = "https://bluemoondev.org"> Matt</a>
  */
-@Command
-public class TwitchCommand extends SubCommand {
+@Command(name = "twitch", subCmds = true)
+public class TwitchCommand extends DiscordCommand {
 
-	public static final String	ALERTS_CHANNEL	= "alerts";
-	public static final String	ALERTS_MENTION	= "mention";
-	public static final String	ADD				= "add";
-	public static final String	REMOVE			= "remove";
+    private static final Log LOG = Log.get("JDAExtended", TwitchCommand.class);
 
-	@Override
-	public void run(Message message, String subCmd, String[] args) {
-		switch (subCmd) {
-			case ALERTS_CHANNEL:
-				List<TextChannel> channels = message.getGuild().getTextChannelsByName(args[0], true);
-				if (!channels.isEmpty()) {
-					long channelId = channels.get(0).getIdLong();
-					JDAExtended.CORE_TABLE.setAlertsChannel(message.getGuild().getIdLong(), channelId);
-					ActionUtil.sendMessageAndComplete(	message, "%s %s has been set as the Twitch Alerts channel",
-														Emojis.SUCCESS, args[0]);
-					return;
-				} else {
-					ActionUtil.sendMessageAndComplete(message, "%s No such channel exists", Emojis.ERROR);
-				}
-			break;
-			case ALERTS_MENTION:
-				List<Role> roles = message.getGuild().getRolesByName(args[0], true);
-				if (!roles.isEmpty()) {
-					long roleId = roles.get(0).getIdLong();
-					JDAExtended.CORE_TABLE.setAlertsMention(message.getGuild().getIdLong(), roleId);
-					ActionUtil.sendMessageAndComplete(	message, "%s %s has been set as the Twitch Alerts mentioned role",
-														Emojis.SUCCESS, args[0]);
-					return;
-				} else {
-					ActionUtil.sendMessageAndComplete(message, "%s No such role exists", Emojis.ERROR);
-				}
-			break;
-			case ADD:
-				boolean flag = (args.length > 2 && args[2].equalsIgnoreCase("true")) ? true : false;
-				long twitchId = JDAExtended.getTwitchRequester().getIdFromName(args[1]);
-				if (twitchId == -1L) {
-					ActionUtil.sendMessageAndComplete(	message, "%s The twitch channel %s cannot be found", Emojis.ERROR,
-														args[1]);
-					return;
-				}
-				
-				JDAExtended.TWITCH_TABLE.setUser(	message.getGuild().getIdLong(),
-													Long.parseLong(Util.getIdFromMention(args[0])),
-													JDAExtended.getTwitchRequester().getIdFromName(args[1]), flag);
-				ActionUtil.sendMessageAndComplete(	message, "%s %s has been added as a streamer. Gets mentions: %b",
-													Emojis.SUCCESS, args[1], flag);
-			break;
-			case REMOVE:
-				twitchId = JDAExtended.getTwitchRequester().getIdFromName(args[1]);
-				if (twitchId == -1L) {
-					ActionUtil.sendMessageAndComplete(	message, "%s The twitch channel %s cannot be found", Emojis.ERROR,
-														args[1]);
-					return;
-				}
+    public static final String ALERTS_CHANNEL = "alerts";
+    public static final String ALERTS_MENTION = "mention";
+    public static final String ADD            = "add";
+    public static final String REMOVE         = "remove";
 
-				try {
-					JDAExtended.TWITCH_TABLE
-							.delete(new DataSet(JDAExtended.TWITCH_TABLE.GUILD_ID.name, message.getGuild().getIdLong()),
-									new DataSet(JDAExtended.TWITCH_TABLE.USER_ID.name,
-												Long.parseLong(Util.getIdFromMention(args[0]))),
-									new DataSet(JDAExtended.TWITCH_TABLE.TWITCH_ID.name, twitchId));
-				} catch (SSQLException ex) {
-					Debug.error(ex);
-				}
-				ActionUtil.sendMessageAndComplete(	message, "%s %s has been removed from the Twitch alerts system",
-													Emojis.SUCCESS, args[1]);
-			break;
-			default:
-				ActionUtil.sendMessageAndComplete(message, "%s COMMAND ERROR %s", Emojis.ERROR, Emojis.ERROR);
+    @Argument(name = "channel", shortcut = "c", cmd = ALERTS_CHANNEL,
+              desc = "The text channel where Twitch alerts should be posted")
+    private String alertsChannelName;
 
-		}
-	}
+    @Argument(name = "mention", shortcut = "m", cmd = ALERTS_MENTION,
+              desc = "The role that should get mentioned when an alert is posted and "
+                      + "the streamer conditions are met. See `>twitch add` for more information")
+    private String alertsMention;
 
-	@Override
-	public String getName() { return "twitch"; }
+    @Argument(name = "channel", shortcut = "c", cmd = ADD, desc = "The twitch channel to add to the alerts system")
+    private String channelNameToAdd;
 
-	@Override
-	public String getDescription() { return "Manages the twitch alerts system"; }
+    @Argument(name = "mentionable", shortcut = "m", cmd = ADD, required = false, defaultValue = "false",
+              desc = "Should the alert mention the defined role for this streamer?")
+    private boolean channelGetsMention;
 
-	@Override
-	public String getDetailedDescription() {
-		return "Manages the twitch alerts system. Set up alerts channel and streamers";
-	}
+    @Argument(name = "channel", shortcut = "c", cmd = REMOVE,
+              desc = "The twitch channel to remove from the alerts system")
+    private String channelToRemove;
 
-	@Override
-	public String[] getSubCommands() { return new String[] { ALERTS_CHANNEL, ALERTS_MENTION, ADD, REMOVE }; }
+    @Override
+    public void preRun(String sub, CommandParser parser) {
+        switch (sub) {
+            case ALERTS_CHANNEL:
+                alertsChannelName = parser.get("channel");
+            break;
+            case ALERTS_MENTION:
+                alertsMention = parser.get("mention");
+            break;
+            case ADD:
+                channelNameToAdd = parser.get("channel");
+                channelGetsMention = Boolean.parseBoolean(parser.get("mentionable"));
+            break;
+            case REMOVE:
+                channelToRemove = parser.get("channel");
+            break;
+        }
+    }
 
-	@Override
-	public String[] getUsages() {
-		return new String[] {	"[sub command]",
-								"<channel name>",
-								"<role name>",
-								"<@user> <twitch channel> |mentions-flag|",
-								"<@user> <twitch channel>" };
-	}
+    @Override
+    public void run(Message message, String subCmd) {
+        switch (subCmd) {
+            case ALERTS_CHANNEL:
+                List<TextChannel> channels = message.getGuild().getTextChannelsByName(alertsChannelName, true);
+                if (!channels.isEmpty()) {
+                    long channelId = channels.get(0).getIdLong();
+                    JDAExtended.CORE_TABLE.setAlertsChannel(message.getGuild().getIdLong(), channelId);
+                    ActionUtil.sendMessageAndComplete(message, "%s %s has been set as the Twitch Alerts channel",
+                                                      Emojis.SUCCESS, alertsChannelName);
+                    return;
+                } else {
+                    ActionUtil.sendMessageAndComplete(message, "%s No such channel exists", Emojis.ERROR);
+                }
+            break;
+            case ALERTS_MENTION:
+                List<Role> roles = message.getGuild().getRolesByName(alertsMention, true);
+                if (!roles.isEmpty()) {
+                    long roleId = roles.get(0).getIdLong();
+                    JDAExtended.CORE_TABLE.setAlertsMention(message.getGuild().getIdLong(), roleId);
+                    ActionUtil.sendMessageAndComplete(message, "%s %s has been set as the Twitch Alerts mentioned role",
+                                                      Emojis.SUCCESS, alertsMention);
+                    return;
+                } else {
+                    ActionUtil.sendMessageAndComplete(message, "%s No such role exists", Emojis.ERROR);
+                }
+            break;
+            case ADD:
+                long twitchId = JDAExtended.getTwitchRequester().getIdFromName(channelNameToAdd);
+                if (twitchId == -1L) {
+                    ActionUtil.sendMessageAndComplete(message, "%s The twitch channel %s cannot be found", Emojis.ERROR,
+                                                      channelNameToAdd);
+                    return;
+                }
 
-	@Override
-	public PairedValues<Permission, String> getPermissions(String guildId) {
-		return PermissionUtil.ADMIN_PERM;
-	}
+                JDAExtended.TWITCH_TABLE.setUser(message.getGuild().getIdLong(),
+                                                 twitchId, channelGetsMention);
+                ActionUtil.sendMessageAndComplete(message, "%s %s has been added as a streamer. Gets mentions: %b",
+                                                  Emojis.SUCCESS, channelNameToAdd, channelGetsMention);
+            break;
+            case REMOVE:
+                twitchId = JDAExtended.getTwitchRequester().getIdFromName(channelToRemove);
+                if (twitchId == -1L) {
+                    ActionUtil.sendMessageAndComplete(message, "%s The twitch channel %s cannot be found", Emojis.ERROR,
+                                                      channelToRemove);
+                    return;
+                }
+                if (!JDAExtended.TWITCH_TABLE.getTwitchIds(message.getGuild().getIdLong()).contains(twitchId)) {
+                    ActionUtil.sendMessageAndComplete(message,
+                                                      "%s %s was never part of the alerts system, no need to remove",
+                                                      Emojis.ERROR, channelToRemove);
+                    return;
+                }
 
-	@Override
-	public int getPriority() { return 1; }
+                LOG.info("Removing %s (twitch ID: %i) from the database and alerts system", channelToRemove, twitchId);
+
+                JDAExtended.TWITCH_TABLE.remove(message.getGuild().getIdLong(), twitchId);
+                ActionUtil.sendMessageAndComplete(message, "%s %s has been removed from the Twitch alerts system",
+                                                  Emojis.SUCCESS, channelToRemove);
+                LOG.trace("%s (twitch ID: %i) has been removed from the database and alerts system", channelToRemove,
+                          twitchId);
+            break;
+            default:
+                ActionUtil.sendMessageAndComplete(message, "%s COMMAND ERROR %s", Emojis.ERROR, Emojis.ERROR);
+
+        }
+    }
+
+    @Override
+    public PairedValues<Permission, String> getPermissions(String guildId) {
+        return PermissionUtil.ADMIN_PERM;
+    }
 
 }

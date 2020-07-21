@@ -18,7 +18,7 @@ package org.bluemoondev.jdaextended.util;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.bluemoondev.jdaextended.JDAExtended;
+import org.bluemoondev.blutilities.debug.Log;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -41,6 +41,8 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction;
  * @author <a href = "https://bluemoondev.org"> Matt</a>
  */
 public class ActionUtil {
+    
+    private static final Log LOG = Log.get("JDAExtended", ActionUtil.class);
 
 	private static MessageAction sendMessage(MessageChannel channel, String format, Object... values) {
 		return channel.sendMessage(String.format(format, values));
@@ -114,7 +116,7 @@ public class ActionUtil {
 		try {
 		user.openPrivateChannel().complete().sendMessage(msg).complete();
 		}catch(ErrorResponseException ex) {
-			Debug.warn("Failed to send DM to user " + user.getName(), ex);
+			LOG.warn(ex, "Failed to send DM to user " + user.getName());
 			success = false;
 		}
 

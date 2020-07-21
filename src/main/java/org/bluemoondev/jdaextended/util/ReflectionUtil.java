@@ -1,21 +1,17 @@
 /*
-*	jdaextended
-*	Copyright (C) 2019 Matt
-*
-*	This program is free software: you can redistribute it and/or modify
-*	it under the terms of the GNU General Public License as published by
-*	the Free Software Foundation, either version 3 of the License, or
-*	(at your option) any later version.
-*
-*	This program is distributed in the hope that it will be useful,
-*	but WITHOUT ANY WARRANTY; without even the implied warranty of
-*	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*	GNU General Public License for more details.
-*
-*	You should have received a copy of the GNU General Public License
-*	along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*
-*	Contact: matt@bluemoondev.org
+ * jdaextended
+ * Copyright (C) 2019 Matt
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * Contact: matt@bluemoondev.org
  */
 package org.bluemoondev.jdaextended.util;
 
@@ -25,6 +21,8 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.bluemoondev.blutilities.debug.Log;
+
 import com.google.common.collect.ImmutableSet;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
@@ -32,7 +30,6 @@ import com.google.common.reflect.ClassPath.ClassInfo;
 /**
  * <strong>Project:</strong> jdaextended <br>
  * <strong>File:</strong> ReflectionUtil.java
- *
  * <p>
  * Utility methods for ease of use with reflection
  * </p>
@@ -41,13 +38,13 @@ import com.google.common.reflect.ClassPath.ClassInfo;
  */
 public class ReflectionUtil {
 
+    private static final Log LOG = Log.get("JDAExtended", ReflectionUtil.class);
+
     public static Set<Method> getMethodsAnnotatedBy(Class<?> clazz, Class<? extends Annotation> annotation) {
         Method[] methods = clazz.getDeclaredMethods();
         Set<Method> result = new HashSet<Method>();
         for (Method m : methods) {
-            if (m.getAnnotation(annotation) == null) {
-                continue;
-            }
+            if (m.getAnnotation(annotation) == null) { continue; }
             result.add(m);
         }
 
@@ -59,7 +56,7 @@ public class ReflectionUtil {
         try {
             cp = ClassPath.from(ClassLoader.getSystemClassLoader());
         } catch (IOException e) {
-            Debug.error("Failed to create ClassPath from default system class loader", e);
+            LOG.error(e, "Failed to create ClassPath from default system class loader");
         }
 
         ImmutableSet<ClassInfo> info = cp.getTopLevelClassesRecursive(packageName);
@@ -71,7 +68,52 @@ public class ReflectionUtil {
                     result.add(Class.forName(action.getName()));
                 }
             } catch (ClassNotFoundException e) {
-                Debug.error("Attempted to load a class that could not be found. Class: " + action.getName(), e);
+                LOG.error(e, "Attempted to load a class that could not be found. Class: " + action.getName());
+            }
+        });
+
+        return result;
+    }
+
+    public static <T> Set<Class<? extends T>> getClasses(String packageName, Class<T> superClass) {
+        ClassPath cp = null;
+        try {
+            cp = ClassPath.from(ClassLoader.getSystemClassLoader());
+        } catch (IOException e) {
+            LOG.error(e, "Failed to create ClassPath from default system class loader");
+        }
+
+        ImmutableSet<ClassInfo> info = cp.getTopLevelClassesRecursive(packageName);
+        Set<Class<? extends T>> result = new HashSet<>();
+        info.forEach(action -> {
+            try {
+                if(Class.forName(action.getName()).getSuperclass() == superClass) {
+                    result.add((Class<? extends T>) Class.forName(action.getName()));
+                }
+            } catch (ClassNotFoundException e) {
+                LOG.error(e, "Attempted to load a class that could not be found. Class: " + action.getName());
+            }
+        });
+
+        return result;
+    }
+    
+    public static <T> Set<Class<? extends T>> getAllSubClasses(Class<T> superClass){
+        ClassPath cp = null;
+        try {
+            cp = ClassPath.from(ClassLoader.getSystemClassLoader());
+        } catch (IOException e) {
+            LOG.error(e, "Failed to create ClassPath from default system class loader");
+        }
+        ImmutableSet<ClassInfo> info = cp.getAllClasses();
+        Set<Class<? extends T>> result = new HashSet<>();
+        info.forEach(action -> {
+            try {
+                if(Class.forName(action.getName()).getSuperclass() == superClass) {
+                    result.add((Class<? extends T>) Class.forName(action.getName()));
+                }
+            } catch (ClassNotFoundException e) {
+                LOG.error(e, "Attempted to load a class that could not be found. Class: " + action.getName());
             }
         });
 

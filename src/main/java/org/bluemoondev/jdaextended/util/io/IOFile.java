@@ -20,7 +20,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
-import org.bluemoondev.jdaextended.util.Debug;
+import org.bluemoondev.blutilities.debug.Log;
 import org.bluemoondev.jdaextended.util.exceptions.JDAIOException;
 
 /**
@@ -33,6 +33,8 @@ import org.bluemoondev.jdaextended.util.exceptions.JDAIOException;
  * @author <a href = "https://bluemoondev.org"> Matt</a>
  */
 public abstract class IOFile {
+    
+    private static final Log LOG = Log.get("JDAExtended", IOFile.class);
 	
 	public static final int MAX_STREAM_SIZE = 1024 * 1024;
 
@@ -52,7 +54,7 @@ public abstract class IOFile {
 			while ((line = reader.readLine()) != null) { src.append(line).append("\n"); }
 			reader.reset();
 		} catch (IOException ex) {
-			Debug.error("Failed to read file", ex);
+			LOG.error(ex, "Failed to read file");
 		}
 
 		return src.toString();
@@ -74,7 +76,7 @@ public abstract class IOFile {
 			}
 			reader.reset();
 		} catch (IOException ex) {
-			Debug.error("Failed to read lines", ex);
+			LOG.error(ex, "Failed to read lines");
 		}
 
 		return results;
@@ -82,7 +84,7 @@ public abstract class IOFile {
 
 	public String readLine(int lineNumber) {
 		if (lineNumber < 0 || lineNumber >= readLines().length) {
-			Debug.error("Attempted to read a non existent line", new IllegalArgumentException());
+			LOG.warn(new IllegalArgumentException(), "Attempted to read a non existent line");
 			return null;
 		}
 		return readLines()[lineNumber];
@@ -94,7 +96,7 @@ public abstract class IOFile {
 			reader.close();
 			if(getWriter() != null) getWriter().close();
 		} catch (IOException ex) {
-			Debug.error("Failed to close buffered file", ex);
+			LOG.error(ex, "Failed to close buffered file");
 		}
 	}
 

@@ -71,6 +71,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
+				<version>3.2.0</version>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
@@ -83,6 +84,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.2.0</version>
 				<executions>
 					<execution>
 						<id>attach-javadoc</id>
@@ -183,6 +185,12 @@
 			<groupId>org.bluemoondev</groupId>
 			<artifactId>SimpleSQL</artifactId>
 			<version>dev</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.bluemoondev</groupId>
+			<artifactId>Blutilities4j</artifactId>
+			<version>0.0.0.22</version>
 		</dependency>
 
 		<dependency>

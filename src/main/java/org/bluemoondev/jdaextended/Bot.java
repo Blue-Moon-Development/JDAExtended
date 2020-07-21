@@ -17,7 +17,7 @@ package org.bluemoondev.jdaextended;
 
 import javax.security.auth.login.LoginException;
 
-import org.bluemoondev.jdaextended.util.Debug;
+import org.bluemoondev.blutilities.debug.Log;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -45,6 +45,8 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
  * @author <a href = "https://bluemoondev.org"> Matt</a>
  */
 public final class Bot {
+    
+    private static final Log LOG = Log.get("JDAExtended", Bot.class);
 
 	private JDA			jda;
 	private JDABuilder	builder;
@@ -71,14 +73,14 @@ public final class Bot {
 	 */
 	public void build() {
 		try {
-			Debug.info("Bot logging in");
+			LOG.info("Bot logging in");
 			jda = builder.build();
 		} catch (LoginException e) {
-			Debug.error("Unable to login", e);
+		    LOG.error("Unable to login", e);
 		}
 
 		loggedIn = true;
-		Debug.info("Bot logged in");
+		LOG.info("Bot logged in");
 	}
 
 	/**

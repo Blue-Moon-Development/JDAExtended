@@ -19,20 +19,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.bluemoondev.jdaextended.util.Debug;
+import org.bluemoondev.blutilities.debug.Log;
 
-import com.github.philippheuer.credentialmanager.CredentialManager;
-import com.github.philippheuer.credentialmanager.CredentialManagerBuilder;
-import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
-import com.github.twitch4j.auth.providers.TwitchIdentityProvider;
-import com.github.twitch4j.helix.TwitchHelix;
-import com.github.twitch4j.helix.TwitchHelixBuilder;
 import com.github.twitch4j.helix.domain.Game;
 import com.github.twitch4j.helix.domain.User;
 import com.github.twitch4j.helix.domain.UserList;
-import com.github.twitch4j.kraken.domain.KrakenUserList;
 
 /**
  * <strong>Project:</strong> jdaextended <br>
@@ -44,6 +37,8 @@ import com.github.twitch4j.kraken.domain.KrakenUserList;
  * @author <a href = "https://bluemoondev.org"> Matt</a>
  */
 public class TwitchRequester {
+    
+    private static final Log LOG = Log.get("JDAExtended", TwitchRequester.class);
 
 	private TwitchClient	client;
 	private String			clientId;
@@ -52,11 +47,11 @@ public class TwitchRequester {
 	public TwitchRequester(String clientId, String credential) {
 		this.clientId = clientId;
 		this.credential = credential;
-		Debug.info("Initializing twitch client");
+		LOG.info("Initializing twitch client");
 		client = TwitchClientBuilder.builder().withEnableHelix(true)
 				.withClientId(clientId).withClientSecret(credential)
 				.build();
-		Debug.info("Twitch client connected");
+		LOG.info("Twitch client connected");
 	}
 
 	public TwitchClient getClient() { return client; }

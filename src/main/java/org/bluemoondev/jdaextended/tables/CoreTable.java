@@ -13,7 +13,7 @@
  */
 package org.bluemoondev.jdaextended.tables;
 
-import org.bluemoondev.jdaextended.util.Debug;
+import org.bluemoondev.blutilities.debug.Log;
 import org.bluemoondev.simplesql.SQLTable;
 import org.bluemoondev.simplesql.columns.LongColumn;
 import org.bluemoondev.simplesql.columns.SQLColumn;
@@ -30,6 +30,8 @@ import org.bluemoondev.simplesql.exceptions.SSQLException;
  * @author <a href = "https://bluemoondev.org"> Matt</a>
  */
 public class CoreTable extends SQLTable {
+    
+    private static final Log LOG = Log.get("JDAExtended", CoreTable.class);
 
 	public static final SQLColumn<Long>		GUILD_ID		= new LongColumn("guild_id", 0L, true);
 	public static final SQLColumn<Long>		ALERTS_CHANNEL	= new LongColumn("alerts_channel", null);
@@ -45,7 +47,6 @@ public class CoreTable extends SQLTable {
 		try {
 			update(guildId, LOGS_CHANNEL.name, channel);
 		} catch (SSQLException ex) {
-			Debug.error(ex);
 		}
 	}
 
@@ -53,7 +54,6 @@ public class CoreTable extends SQLTable {
 		try {
 			update(guildId, ALERTS_CHANNEL.name, channel);
 		} catch (SSQLException ex) {
-			Debug.error(ex);
 		}
 	}
 
@@ -61,7 +61,6 @@ public class CoreTable extends SQLTable {
 		try {
 			update(guildId, ALERTS_MENTION.name, roleId);
 		} catch (SSQLException ex) {
-			Debug.error(ex);
 		}
 	}
 
@@ -70,7 +69,6 @@ public class CoreTable extends SQLTable {
 		try {
 			update(guildId, PREFIX.name, prefix);
 		} catch (SSQLException ex) {
-			Debug.error(ex);
 		}
 	}
 
@@ -78,7 +76,6 @@ public class CoreTable extends SQLTable {
 		try {
 			return getLong(guildId, LOGS_CHANNEL.name);
 		} catch (SSQLException ex) {
-			Debug.error(ex);
 			return -1L;
 		}
 	}
@@ -87,7 +84,6 @@ public class CoreTable extends SQLTable {
 		try {
 			return getLong(guildId, ALERTS_CHANNEL.name);
 		} catch (SSQLException ex) {
-			Debug.error(ex);
 			return -1L;
 		}
 	}
@@ -96,7 +92,6 @@ public class CoreTable extends SQLTable {
 		try {
 			return getLong(guildId, ALERTS_MENTION.name);
 		} catch (SSQLException ex) {
-			Debug.error(ex);
 			return -1L;
 		}
 	}
@@ -105,7 +100,6 @@ public class CoreTable extends SQLTable {
 		try {
 			return getString(guildId, PREFIX.name);
 		} catch (SSQLException ex) {
-			Debug.error(ex);
 			return null;
 		}
 	}

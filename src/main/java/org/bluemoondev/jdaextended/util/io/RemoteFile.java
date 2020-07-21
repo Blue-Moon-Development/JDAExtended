@@ -20,7 +20,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.bluemoondev.jdaextended.util.Debug;
+import org.bluemoondev.blutilities.debug.Log;
 
 /**
  * <strong>Project:</strong> JDAExtended<br>
@@ -32,6 +32,8 @@ import org.bluemoondev.jdaextended.util.Debug;
  * @author <a href = "https://bluemoondev.org"> Matt</a>
  */
 public class RemoteFile extends IOFile {
+    
+    private static final Log LOG = Log.get("JDAExtended", RemoteFile.class);
 
 	private InputStreamReader inStreamReader;
 	
@@ -45,7 +47,7 @@ public class RemoteFile extends IOFile {
 			reader = new BufferedReader(inStreamReader);
 			reader.mark(MAX_STREAM_SIZE);
 		} catch (IOException ex) {
-			Debug.error(ex);
+			LOG.error(ex);
 		}
 
 	}
@@ -57,7 +59,7 @@ public class RemoteFile extends IOFile {
 			if (inStreamReader != null)
 				inStreamReader.close();
 		} catch (IOException ex) {
-			Debug.error(ex);
+			LOG.error(ex);
 		}
 	}
 

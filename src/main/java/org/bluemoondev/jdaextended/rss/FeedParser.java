@@ -32,7 +32,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.bluemoondev.jdaextended.util.Debug;
+import org.bluemoondev.blutilities.debug.Log;
 import org.bluemoondev.jdaextended.util.FileUtil;
 
 import com.rometools.rome.feed.synd.SyndEntry;
@@ -52,6 +52,8 @@ import com.rometools.rome.io.XmlReader;
  * @author <a href = "https://bluemoondev.org"> Matt</a>
  */
 public class FeedParser {
+    
+    private static final Log LOG = Log.get("JDAExtended", FeedParser.class);
 
 	protected final String	url;
 	protected final String	fileName;
@@ -78,7 +80,7 @@ public class FeedParser {
 				dir.mkdir();
 				f.createNewFile();
 			} catch (IOException e) {
-				Debug.warn("Could not create feeds file: " + fileName, e);
+			    LOG.warn(e, "Could not create feeds file: " + fileName);
 			}
 		}else {
 			for(String link : FileUtil.readLines(fileName))
@@ -97,10 +99,10 @@ public class FeedParser {
 				if (feed.getEntries() == null || feed.getEntries().isEmpty()) return null;
 				return feed.getEntries().get(0);
 			} catch (IOException | IllegalArgumentException | FeedException e) {
-				Debug.warn("Failed to get feed from url: " + url, e);
+			    LOG.warn(e, "Failed to get feed from url: " + url);
 			}
 		} catch (IOException e) {
-			Debug.warn("Failed to create http client from url: " + url, e);
+		    LOG.warn(e, "Failed to create http client from url: " + url);
 		}
 		return null;
 	}
@@ -115,10 +117,10 @@ public class FeedParser {
 				if (feed.getEntries() == null || feed.getEntries().isEmpty()) return null;
 				return feed.getEntries();
 			} catch (IOException | IllegalArgumentException | FeedException e) {
-				Debug.warn("Failed to get feed from url: " + url, e);
+			    LOG.warn(e, "Failed to get feed from url: " + url);
 			}
 		} catch (IOException e) {
-			Debug.warn("Failed to create http client from url: " + url, e);
+		    LOG.warn(e, "Failed to create http client from url: " + url);
 		}
 		return null;
 	}
@@ -126,7 +128,7 @@ public class FeedParser {
 	public void update(FeedConsumer consumer) {
 		List<SyndEntry> entries = getFeeds();
 		if (entries == null) {
-			Debug.warn("No feed entries for " + url);
+		    LOG.warn("No feed entries for " + url);
 			return;
 		}
 

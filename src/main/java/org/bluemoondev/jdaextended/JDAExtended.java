@@ -17,8 +17,10 @@ package org.bluemoondev.jdaextended;
 
 import java.io.File;
 
+import org.bluemoondev.blutilities.debug.Log;
 import org.bluemoondev.jdaextended.commands.RSSCommand;
-import org.bluemoondev.jdaextended.handlers.CommandHandler;
+import org.bluemoondev.jdaextended.commands.TwitchCommand;
+import org.bluemoondev.jdaextended.handlers.CommandListener;
 import org.bluemoondev.jdaextended.handlers.EventHandler;
 import org.bluemoondev.jdaextended.rss.RSSCache;
 import org.bluemoondev.jdaextended.settings.Config;
@@ -27,11 +29,9 @@ import org.bluemoondev.jdaextended.tables.RSSTable;
 import org.bluemoondev.jdaextended.tables.TwitchTable;
 import org.bluemoondev.jdaextended.twitch.TwitchRequester;
 import org.bluemoondev.jdaextended.twitch.TwitchTicker;
-import org.bluemoondev.jdaextended.util.Debug;
 import org.bluemoondev.simplesql.MySql;
 import org.bluemoondev.simplesql.SQLite;
 import org.bluemoondev.simplesql.SimpleSQL;
-import org.bluemoondev.simplesql.utils.TableManager;
 
 /**
  * <strong>Project:</strong> jdaextended <br>
@@ -44,81 +44,86 @@ import org.bluemoondev.simplesql.utils.TableManager;
  */
 public class JDAExtended {
 
-	/**
-	 * The default prefix used for commands
-	 */
-	public static final String DEFAULT_PREFIX = ">";
+    private static final Log LOG = Log.get("JDAExtended", JDAExtended.class);
 
-	// API Data managers
-	public static CoreTable		CORE_TABLE		= new CoreTable();
-	public static TwitchTable	TWITCH_TABLE	= new TwitchTable();
-	public static RSSTable		RSS_TABLE		= new RSSTable();
+    /**
+     * The default prefix used for commands
+     */
+    public static final String DEFAULT_PREFIX = ">";
 
-	private static Bot bot;
+    // API Data managers
+    public static CoreTable   CORE_TABLE   = new CoreTable();
+    public static TwitchTable TWITCH_TABLE = new TwitchTable();
+    public static RSSTable    RSS_TABLE    = new RSSTable();
 
-	private static Config cfg;
+    private static Bot bot;
 
-	private static TwitchRequester twitchRequester;
+    private static Config cfg;
 
-	private static long devId;
+    private static TwitchRequester twitchRequester;
 
-	/**
-	 * Initializes the bot and sets up objects before starting the application
-	 *
-	 * @param botApp Your main app class that extends
-	 *               {@link org.bluemoondev.jdaextended.BotApp BotApp}
-	 */
-	public static void start(BotApp botApp) {
-		// SimpleSQL.setLogger(Debug.getErrorLogger());
+    private static long devId;
 
-		Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
-			Debug.warn("Uncaught exception in thread " + t.getName(), e);
-		});
+    /**
+     * Initializes the bot and sets up objects before starting the application
+     *
+     * @param botApp Your main app class that extends
+     *               {@link org.bluemoondev.jdaextended.BotApp BotApp}
+     */
+    public static void start(BotApp botApp) {
 
-		cfg = new Config("./settings.cfg");
-		SimpleSQL.setLogger(Debug.getLogger());
-		if (cfg.getString("database").equalsIgnoreCase("sqlite"))
-			SimpleSQL.init(new SQLite(new File("./database.db")));
-		else SimpleSQL.init(new MySql(	cfg.getString("database.host"), cfg.getString("database.user"),
-										cfg.getString("database.password"), cfg.getString("database.name"),
-										cfg.getInt("database.port"),
-										cfg.getString("database.timezone")));
-		devId = cfg.getLong("dev.id");
+        Log.setOnErrorAction(() -> {
+            LOG.trace("Shutting down JDAExtended");
+            if (getBot().isLoggedIn()) { getBot().getJda().shutdownNow(); }
+            System.exit(-1);
+        });
 
-		botApp.preinit();
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+            LOG.warn(e, "Uncaught exception in thread %s", t.getName());
+        });
 
-		bot = new Bot(cfg.getString("bot.token"), botApp.getActivity());
-		EventHandler.init(bot, botApp.getHandlersPackageName());
-		CommandHandler.init(botApp.getCommandsPackageName());
-		bot.addEventListener(new CommandHandler());
+        cfg = new Config("./settings.cfg");
+        if (cfg.getString("database").equalsIgnoreCase("sqlite"))
+            SimpleSQL.init(new SQLite(new File("./database.db")));
+        else SimpleSQL.init(new MySql(cfg.getString("database.host"), cfg.getString("database.user"),
+                                      cfg.getString("database.password"), cfg.getString("database.name"),
+                                      cfg.getInt("database.port"),
+                                      cfg.getString("database.timezone")));
+        devId = cfg.getLong("dev.id");
 
-		botApp.init();
+        botApp.preinit();
 
-		bot.build();
+        bot = new Bot(cfg.getString("bot.token"), botApp.getActivity());
+        EventHandler.init(bot, botApp.getHandlersPackageName());
+        CommandListener.init();
+        bot.addEventListener(new CommandListener());
+        if (Modules.isEnabled(Modules.TWITCH)) {
+            twitchRequester = new TwitchRequester(cfg.getString("twitch.client_id"), cfg.getString("twitch.secret"));
+            new TwitchTicker();
+            CommandListener.addCommand(new TwitchCommand());
+        }
+        if (Modules.isEnabled(Modules.RSS)) { CommandListener.addCommand(new RSSCommand()); }
+        RSSCache.init(cfg);
 
-		if (Modules.isEnabled(Modules.TWITCH)) {
-			twitchRequester = new TwitchRequester(cfg.getString("twitch.client_id"), cfg.getString("twitch.secret"));
-			new TwitchTicker();
-		}
+        botApp.init();
 
-		if (Modules.isEnabled(Modules.RSS)) { CommandHandler.add(new RSSCommand()); }
-		RSSCache.init(cfg);
+        bot.build();
 
-		botApp.postInit();
-	}
+        botApp.postInit();
+    }
 
-	/**
-	 * @return the bot
-	 */
-	public static Bot getBot() { return bot; }
+    /**
+     * @return the bot
+     */
+    public static Bot getBot() { return bot; }
 
-	/**
-	 * @return The twitch requester. Null if the module is not enabled
-	 */
-	public static TwitchRequester getTwitchRequester() { return twitchRequester; }
+    /**
+     * @return The twitch requester. Null if the module is not enabled
+     */
+    public static TwitchRequester getTwitchRequester() { return twitchRequester; }
 
-	public static long getDevId() { return devId; }
+    public static long getDevId() { return devId; }
 
-	public static Config getConfig() { return cfg; }
+    public static Config getConfig() { return cfg; }
 
 }

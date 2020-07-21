@@ -18,14 +18,14 @@ package org.bluemoondev.jdaextended.twitch;
 import java.awt.Color;
 import java.util.List;
 
-import com.github.philippheuer.events4j.simple.SimpleEventHandler;
-import com.github.twitch4j.events.ChannelGoLiveEvent;
-
+import org.bluemoondev.blutilities.debug.Log;
 import org.bluemoondev.jdaextended.JDAExtended;
 import org.bluemoondev.jdaextended.Modules;
 import org.bluemoondev.jdaextended.util.ActionUtil;
-import org.bluemoondev.jdaextended.util.Debug;
 import org.bluemoondev.jdaextended.util.Emojis;
+
+import com.github.philippheuer.events4j.simple.SimpleEventHandler;
+import com.github.twitch4j.events.ChannelGoLiveEvent;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -42,6 +42,8 @@ import net.dv8tion.jda.api.entities.MessageChannel;
  * @author <a href = "https://bluemoondev.org"> Matt</a>
  */
 public class TwitchTicker {
+    
+    private static final Log LOG = Log.get("JDAExtended", TwitchTicker.class);
 
 	public TwitchTicker() {
 		if (Modules.isEnabled(Modules.TWITCH) && JDAExtended.getTwitchRequester() != null) {
@@ -55,8 +57,6 @@ public class TwitchTicker {
 
 			JDAExtended.getTwitchRequester().getClient().getEventManager().getEventHandler(SimpleEventHandler.class)
 					.onEvent(ChannelGoLiveEvent.class, subscriber -> {
-						Debug.debug("title changed");
-						Debug.warn("title changed");
 						run(subscriber);
 					});
 		}

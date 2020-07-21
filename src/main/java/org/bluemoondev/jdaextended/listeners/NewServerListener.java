@@ -15,12 +15,11 @@
  */
 package org.bluemoondev.jdaextended.listeners;
 
+import org.bluemoondev.blutilities.debug.Log;
 import org.bluemoondev.jdaextended.JDAExtended;
 import org.bluemoondev.jdaextended.Modules;
 import org.bluemoondev.jdaextended.reflection.EventListener;
 import org.bluemoondev.jdaextended.util.ActionUtil;
-import org.bluemoondev.jdaextended.util.Debug;
-import org.bluemoondev.jdaextended.util.Emojis;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
@@ -37,6 +36,8 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
  */
 @EventListener
 public class NewServerListener extends ListenerAdapter {
+    
+    private static final Log LOG = Log.get("JDAExtended", NewServerListener.class);
 
 	@Override
 	public void onGuildJoin(GuildJoinEvent event) {
@@ -60,7 +61,7 @@ public class NewServerListener extends ListenerAdapter {
 		
 		ActionUtil.sendEmbedAndComplete(event.getGuild().getSystemChannel(), eb.build());
 		
-		Debug.info("Joining new server with ID: " + guildId);
+		LOG.info("Joining new server with ID: " + guildId);
 		String s = JDAExtended.CORE_TABLE.getPrefix(guildId);
 		if (s == null || s == "null" || s.isEmpty())
 			JDAExtended.CORE_TABLE.setPrefix(guildId, JDAExtended.DEFAULT_PREFIX);
