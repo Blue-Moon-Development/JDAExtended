@@ -7,5 +7,6 @@
 /doc/
 /src/test/resources/settings.cfg
 /feeds/
+.idea
 /.idea/
 *.iml
